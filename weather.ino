@@ -143,7 +143,7 @@ void kirimdata(SensorData dhtData, SensorData bmpData, SensorData luxData, Senso
   HTTPClient http;
   WiFiClient client;
 
-  if (http.begin(client, "http://younime.my.id/?page=insert&device_id=213")) {
+  if (http.begin(client, "http://domain.xx/?page=insert&device_id=213")) {
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
     String data = "password=wadsacwas&suhudht=" + String(dhtData.suhu) + "&kelembapan=" + String(dhtData.kelembapan) + "&suhubmp=" + String(bmpData.suhubmp) + "&tekanan=" + String(bmpData.tekanan)+ "&cahaya=" + String(luxData.cahaya)+ "&air=" + String(rainData.air)+ "&intensitas=" + String(rainData.intensitas);
     int httpResponseCode = http.POST(data);
