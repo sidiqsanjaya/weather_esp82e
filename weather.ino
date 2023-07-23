@@ -6,14 +6,12 @@
 #include <BH1750.h>
 #include <Wire.h>
 
-
-
 #define DHTPIN D3                     // Pin yang terhubung ke sensor DHT22
 #define DHTTYPE DHT22                 // DHT 22  (AM2302)
 const int rainA = A0;              // sensor hujan analog
 const int rainD = D0;              // sensor hujan digital
-const char* ssid = "iot";             //nama wifi
-const char* password = "iottest123";  //password wifi
+const char* ssid = "xxxx";             //nama wifi
+const char* password = "xxxxx";  //password wifi
 
 Adafruit_SSD1306 display(128, 32, &Wire, -1);
 DHT dht(DHTPIN, DHTTYPE);             //init dht
@@ -40,18 +38,35 @@ void setup() {
   Wire.begin(D2, D1);
   dht.begin();
 
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
+  if (WiFi.status() != WL_CONNECTED) {
     Serial.println("Menghubungkan ke WiFi...");
+    sensorinit("Menghubungkan ke WiFi...");
+    delay(1000);
+  }else{
+    sensorinit("Koneksi Wifi OK");
+    delay(1000);
   }
+
   if (!lux.begin()) {
     Serial.println("Sensor LUX tidak ditemukan!");
+    sensorinit("Sensor LUX tidak ditemukan!");
     while (1);
+  }else{
+    sensorinit("Sensor LUX OK");
+    delay(1000);
   }
+  
   if (!bmp.begin()) {
     Serial.println("Sensor BMP tidak ditemukan!");
+    sensorinit("Sensor BMP tidak ditemukan!");
     while (1);
+  }else{
+    sensorinit("Sensor BMP OK");
+    delay(1000);
   }
+
+  sensorinit("Sistem OK");
+  delay(1000);
   Serial.println("Kelembapan(%)   Suhu dht22('c)    Tekanan(hpa)    suhu BMP('c)   cahaya(LUX)   intensitas   hujan?");
 }
 
@@ -90,6 +105,15 @@ SensorData SensorRAIN() {
   Serial.print("         " + String(data.air));
   Serial.println("");
   return data;
+}
+
+void sensorinit(String value){
+  display.clearDisplay();
+  display.setCursor(0, 0);
+  display.setTextColor(WHITE);
+  display.setTextSize(1.2);
+  display.println(value);
+  display.display();
 }
 
 void displaySensorData(SensorData dhtData, SensorData bmpData, SensorData luxData, SensorData rainData, int displaysensors) {
@@ -143,7 +167,7 @@ void kirimdata(SensorData dhtData, SensorData bmpData, SensorData luxData, Senso
   HTTPClient http;
   WiFiClient client;
 
-  if (http.begin(client, "http://domain.xx/?page=insert&device_id=213")) {
+  if (http.begin(client, "http://xxxxxx/?page=insert&device_id=xxx")) {
     http.addHeader("Content-Type", "application/x-www-form-urlencoded");
     String data = "password=wadsacwas&suhudht=" + String(dhtData.suhu) + "&kelembapan=" + String(dhtData.kelembapan) + "&suhubmp=" + String(bmpData.suhubmp) + "&tekanan=" + String(bmpData.tekanan)+ "&cahaya=" + String(luxData.cahaya)+ "&air=" + String(rainData.air)+ "&intensitas=" + String(rainData.intensitas);
     int httpResponseCode = http.POST(data);
